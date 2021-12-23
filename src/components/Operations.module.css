@@ -1,0 +1,88 @@
+.operations {
+  margin: 5rem auto;
+  width: 70%;
+}
+
+.heading {
+  margin: 5rem 2rem;
+}
+.title {
+  margin-bottom: 1rem;
+  color: #3e8e7e;
+}
+.introtext {
+  font-size: 2.5rem;
+}
+.items {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+.item {
+  padding: 0.5rem 1.5rem;
+  color: white;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: transform ease-in-out 0.3s;
+}
+.active {
+  transform: translateY(-10px);
+}
+.item.send {
+  background-color: #116530;
+}
+.item.loan {
+  background-color: #ffca03;
+}
+.item.close {
+  background-color: #ff5403;
+}
+.card {
+  width: 100%;
+  box-shadow: 2px 2px 4px 4px #ccc;
+  padding: 5rem 7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+}
+.icon {
+  padding: 1rem;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.icon svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+.icon.send {
+  background-color: #a6cf98;
+}
+.icon.send svg {
+  fill: #116530;
+}
+
+.icon.loan {
+  background-color: #fdff8f;
+}
+
+.icon.loan svg {
+  fill: #ffca03;
+}
+
+.icon.close {
+  background-color: #ffdede;
+}
+
+.icon.close svg {
+  fill: #ff5403;
+}
+.optext h3 {
+  margin: 1rem auto;
+}

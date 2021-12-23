@@ -1,0 +1,63 @@
+.container {
+  display: flex;
+  gap: 5rem;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 2.5rem;
+}
+
+.intro h1 {
+  font-size: 4rem;
+  margin: 2rem auto;
+}
+.subtitle {
+  margin: 1rem auto;
+}
+.intro button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #3e8e7e;
+  cursor: pointer;
+  font-family: inherit;
+  padding-bottom: 0.3rem;
+  border-bottom: 1.5px solid #3e8e7e;
+  font-size: 1.2rem;
+}
+.highlight {
+  display: inline-block;
+  background-color: #7cd1b8;
+  transform: skewX(-7deg);
+}
+.images {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  overflow: hidden;
+}
+
+.img2 img,
+.img3 img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(16px 16px 20px white);
+  filter: brightness(110%);
+  /* filter: opacity(75%); */
+}
+
+.img2 {
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+.img3 {
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}

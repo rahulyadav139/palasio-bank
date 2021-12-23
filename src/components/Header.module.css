@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+}
+.nav.sticky {
+  position: fixed;
+  top: 0;
+  background-color: white;
+  opacity: 0.95;
+  width: 100%;
+  z-index: 1;
+}
+.brand {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.name {
+  font-size: 1.5rem;
+  font-family: 'Bungee', cursive;
+}
+.logo {
+  width: 50px;
+  height: 50px;
+}
+.logo svg {
+  width: 100%;
+  height: 100%;
+  fill: #3e8e7e;
+}
+
+.items {
+  list-style: none;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.items li {
+  margin: 0.5rem;
+
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.open {
+  background-color: #3e8e7e;
+  color: white;
+  border-radius: 1.5rem;
+}
+.items li.inactive {
+  opacity: 0.5;
+}

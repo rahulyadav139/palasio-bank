@@ -1,0 +1,46 @@
+.features {
+  margin: 5rem auto;
+  width: 70%;
+}
+
+.heading {
+  margin: 5rem 2rem;
+}
+.title {
+  margin-bottom: 1rem;
+  color: #3e8e7e;
+}
+.introtext {
+  font-size: 2.5rem;
+}
+.testimonials {
+  background-color: red;
+}
+.card {
+  width: 800px;
+  height: 450px;
+  margin: auto;
+  position: relative;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin: 0.5rem;
+  cursor: pointer;
+  background-color: #ccc;
+}
+.active-dot {
+  background-color: black;
+}
