@@ -1,20 +1,20 @@
 import styles from './Testimonials.module.css';
 import TestimonialSlides from './TestimonialSlides';
 import { TestimonialData } from './TestimonialData';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const Testimonials = props => {
   const [sliderIndex, setSliderIndex] = useState(1);
 
   const data = TestimonialData;
 
-  const nextSlideHandler = () => {
+  const nextSlideHandler = useCallback(() => {
     if (sliderIndex === data.length) {
       setSliderIndex(1);
     } else if (sliderIndex !== data.length) {
       setSliderIndex(prev => prev + 1);
     }
-  };
+  }, [sliderIndex]);
   const prevSlideHandler = () => {
     if (sliderIndex === 1) {
       setSliderIndex(data.length);
@@ -29,7 +29,7 @@ const Testimonials = props => {
   useEffect(() => {
     const timer = setTimeout(nextSlideHandler, 4000);
     return () => clearTimeout(timer);
-  }, [sliderIndex]);
+  }, [sliderIndex, nextSlideHandler]);
   return (
     <div id="features" className={styles.features}>
       <div className={styles.heading}>
