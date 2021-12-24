@@ -17,15 +17,12 @@ const Main = () => {
         </div>
         <div className={styles.images}>
           <div className={styles.img2}>
-            <img
-              src={require('../Assets/wallet-image.jpg')}
-              alt="money-tree-image.jpg"
-            />
+            <img src={require('../Assets/wallet-image.jpg')} alt="money-tree" />
           </div>
           <div className={styles.img3}>
             <img
               src={require('../Assets/piggie-bank-image.jpg')}
-              alt="piggie-bank-image.jpg"
+              alt="piggie-bank"
             />
           </div>
         </div>

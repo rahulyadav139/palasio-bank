@@ -12,7 +12,7 @@ const TestimonialSlides = props => {
       <p>{text}</p>
       <div className={styles.personal}>
         <div className={styles.image}>
-          <img src={props.img} />
+          <img src={props.img} alt={name} />
         </div>
         <div>
           <h4>{name}</h4>

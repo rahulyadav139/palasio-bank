@@ -40,25 +40,24 @@ const Testimonials = props => {
       </div>
       <div className={styles.card}>
         {data.map((el, i) => (
-          <div>
-            <TestimonialSlides
-              onNext={nextSlideHandler}
-              onPrev={prevSlideHandler}
-              img={require(`../Assets/testimonial's-image/testimonial-${
-                i + 1
-              }.jpg`)}
-              className={sliderIndex === i + 1 ? 'active' : ''}
-              title={el.title}
-              text={el.text}
-              name={el.name}
-              address={el.address}
-            />
-          </div>
+          <TestimonialSlides
+            key={i + 1}
+            onNext={nextSlideHandler}
+            onPrev={prevSlideHandler}
+            img={require(`../Assets/testimonial's-image/testimonial-${
+              i + 1
+            }.jpg`)}
+            className={sliderIndex === i + 1 ? 'active' : ''}
+            title={el.title}
+            text={el.text}
+            name={el.name}
+            address={el.address}
+          />
         ))}
         <div className={styles.dots}>
           {data.map((el, i) => (
             <div
-              key={i}
+              key={i + 1}
               onClick={() => activeDotHandler(i)}
               className={
                 sliderIndex === i + 1
