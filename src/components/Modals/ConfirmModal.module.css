@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.button {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+.button button {
+  background-color: #3e8e7e;
+  padding: 0.5rem 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  outline: none;
+  color: white;
+  cursor: pointer;
+}
+.button button:hover,
+.button button:active {
+  background-color: #7cd1b8;
+}

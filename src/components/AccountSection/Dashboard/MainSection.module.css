@@ -1,0 +1,144 @@
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.head1 {
+  font-size: 14px;
+}
+.head2 {
+  font-size: 12px;
+}
+.head3 {
+  font-size: 10px;
+}
+.btn {
+  background: none;
+  border: none;
+  outline: none;
+}
+.cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card {
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 0.4rem;
+}
+.amounts {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  flex: 1 1 auto;
+}
+.subcard {
+  width: 200px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.wrapper1 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.wrapper2 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.2rem;
+}
+.text-colored {
+  color: #3e8e7e;
+}
+.chart {
+  width: 70px;
+  height: 70px;
+}
+.colored {
+  background-color: #e3faf3;
+}
+.wrapper3 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.2rem;
+}
+.wrapper3 .head3 {
+  color: #3e8e7e;
+}
+
+.horizontal {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+.icon {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(127, 255, 212, 0.514);
+  padding: 0.7rem;
+  border-radius: 50%;
+}
+.icon svg {
+  width: 100%;
+  height: 100%;
+  fill: #3e8e7e;
+}
+
+.items {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+.slides {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 0.5rem;
+}
+.slide {
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1.5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+.btn svg {
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  fill: #3e8e7e;
+  width: 20px;
+  height: 20px;
+}
+.btn {
+  border: 1px solid #3e8e7e;
+  border-radius: 0.5rem;
+  padding: 0.05rem 1rem;
+  cursor: pointer;
+}

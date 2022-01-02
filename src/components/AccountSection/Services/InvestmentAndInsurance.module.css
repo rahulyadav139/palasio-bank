@@ -1,0 +1,12 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: #3e8e7e;
+}
+.start {
+  margin: 1rem auto;
+}
+.start a {
+  color: #3e8e7e;
+  text-decoration: underline;
+}

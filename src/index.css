@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Roboto', sans-serif;
   color: #3d3d3d;
 }
 
@@ -12,8 +13,6 @@
   --secondary-color: #FABB51 
   --background-color: #faedc6;
   --primary-color: #7CD1B8
-  --primary-color-dark:  #3E8E7E
+  --primary-color-dark: #3E8E7E 
 }
-body {
-    background-color: var(--background-color);
-}
+

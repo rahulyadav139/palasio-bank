@@ -1,0 +1,59 @@
+.left p {
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.links li {
+  font-size: 12px;
+  margin: 4px auto;
+}
+.link {
+  font-size: 0.8rem;
+}
+.head2 {
+  font-size: 12px;
+  color: #3e8e7e;
+}
+
+.btn {
+  background: none;
+  border: none;
+  outline: none;
+}
+.links {
+  list-style: none;
+}
+.links li {
+  cursor: pointer;
+}
+.links a {
+  padding: 0.1rem 0.2rem;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.card {
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 0.4rem;
+}
+a .journey:hover,
+a .journey:active,
+a .travel:hover,
+a .travel:active {
+  background-color: #f1fffb;
+}
+a {
+  text-decoration: none;
+}
+
+.links a:hover,
+.links a:active {
+  color: white;
+  background-color: #3e8e7e;
+}
+a.active {
+  color: white;
+  background-color: #3e8e7e;
+}

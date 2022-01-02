@@ -1,0 +1,10 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: #3e8e7e;
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}

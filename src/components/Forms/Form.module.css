@@ -1,0 +1,74 @@
+.form {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+}
+.login-fail {
+  font-size: 10px;
+  color: rgb(255, 59, 59);
+}
+
+.inputs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.form input {
+  flex-basis: 70%;
+  padding: 0.5rem;
+  border-width: 1px;
+}
+.form input.invalid {
+  background-color: rgb(255, 188, 188);
+  border-color: rgb(255, 59, 59);
+}
+.form input:focus {
+  background-color: #b9ffea;
+  border-color: #3e8e7e;
+}
+.form input.invalid:focus {
+  background-color: rgb(255, 188, 188);
+  border-color: rgb(255, 59, 59);
+}
+.form label {
+  color: #3e8e7e;
+  flex-basis: 30%;
+}
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+.buttons button {
+  background-color: #3e8e7e;
+  padding: 0.5rem 2rem;
+  border-radius: 1rem;
+  border: none;
+  outline: none;
+  color: white;
+  cursor: pointer;
+}
+.buttons button:hover,
+.buttons button:active {
+  background-color: #7cd1b8;
+}
+.create-account {
+  color: #3e8e7e;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.create-account:hover,
+.create-account:active {
+  color: #7cd1b8;
+}
+.error {
+  display: flex;
+  justify-content: flex-end;
+}
+.error p {
+  font-size: small;
+  text-decoration: none;
+  color: rgb(255, 59, 59);
+}

@@ -1,0 +1,35 @@
+.card {
+  width: 200px;
+  padding: 0.5rem;
+}
+.card hr {
+  margin: 0.5rem auto;
+}
+
+.items {
+  list-style: circle;
+}
+.item {
+  margin: 0.5rem auto;
+}
+.head1 {
+  font-size: 14px;
+  color: #3e8e7e;
+}
+.head2 {
+  font-size: 12px;
+}
+.button {
+  padding: 0.5rem;
+  border: none;
+  outline: none;
+  background-color: #3e8e7e;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.button:hover,
+.button:active {
+  background-color: #7cd1b8;
+}

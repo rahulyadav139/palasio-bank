@@ -1,0 +1,65 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: #3e8e7e;
+}
+.subtitle {
+  color: #3e8e7e;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.form hr {
+  margin: 1rem;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.card {
+  flex-basis: 45%;
+}
+.input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.input input {
+  text-align: right;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 0.5rem;
+  background-color: #d1f1e8;
+}
+
+.slider {
+  width: 100%;
+  margin-top: 1rem;
+}
+.slider input {
+  width: 100%;
+}
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.buttons button {
+  background-color: #3e8e7e;
+  padding: 0.5rem 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  outline: none;
+  color: white;
+  cursor: pointer;
+}
+.buttons button:hover,
+.buttons button:active {
+  background-color: #7cd1b8;
+}

@@ -1,0 +1,33 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  color: #3e8e7e;
+}
+
+.movements {
+  margin-top: 0.5rem;
+  overflow-y: auto;
+  height: 290px;
+}
+.action {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  align-items: center;
+}
+.action button {
+  padding: 0.5rem 1rem;
+  outline: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.action svg {
+  fill: #3e8e7e;
+  width: 20px;
+  height: 20px;
+}
+.action h3 {
+  color: #3e8e7e;
+}

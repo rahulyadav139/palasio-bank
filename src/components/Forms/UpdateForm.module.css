@@ -1,0 +1,97 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: #3e8e7e;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  gap: 0.8rem;
+  width: 80%;
+  margin-left: 3rem;
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+.inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 70%;
+}
+.inputs input,
+.inputs select {
+  display: block;
+  width: 60%;
+  height: 2rem;
+
+  border: 1.5px solid #ccc;
+}
+.inputs label {
+  width: 40%;
+}
+.inputs input {
+  padding: 0.5rem;
+}
+.inputs select {
+  text-align: center;
+}
+
+.filled {
+  width: 60%;
+}
+.error {
+  font-size: 10px;
+  color: rgb(255, 59, 59);
+}
+.buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.buttons button {
+  background-color: #3e8e7e;
+  padding: 0.5rem 2rem;
+  border-radius: 0.5rem;
+  border: none;
+  outline: none;
+  color: white;
+  cursor: pointer;
+}
+.buttons button:hover,
+.buttons button:active {
+  background-color: #7cd1b8;
+}
+
+.form input.invalid {
+  background-color: rgb(255, 188, 188);
+  border-color: rgb(255, 59, 59);
+}
+.form input:focus {
+  background-color: #b9ffea;
+  border-color: #3e8e7e;
+}
+.form input.invalid:focus {
+  background-color: rgb(255, 188, 188);
+  border-color: rgb(255, 59, 59);
+}
+
+.box {
+  position: relative;
+  width: 100%;
+}
+
+.image {
+  width: 150px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.image img {
+  width: 100%;
+}

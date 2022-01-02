@@ -1,0 +1,25 @@
+.title {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  color: #3e8e7e;
+}
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  gap: 1rem;
+  width: 80%;
+  margin-left: 3rem;
+}
+
+.filled {
+  width: 70%;
+}
+.wrapper label {
+  width: 30%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
