@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani&display=swap');
+
+.image {
+  width: 40%;
+  margin: auto;
+}
+.image img {
+  width: 100%;
+}
+.title {
+  color: #3e8e7e;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+}

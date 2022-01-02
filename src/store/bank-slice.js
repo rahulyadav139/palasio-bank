@@ -33,7 +33,7 @@ const bankSlice = createSlice({
     },
 
     crateNewAccount(state, action) {
-      const profile = { ...sampleData };
+      const profile = JSON.parse(JSON.stringify(sampleData));
       const { name, email, username, password } = action.payload;
       profile.personalDetails.name = name;
       profile.personalDetails.email = email;
