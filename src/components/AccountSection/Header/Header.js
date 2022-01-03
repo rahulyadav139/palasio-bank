@@ -15,14 +15,18 @@ const Header = props => {
 
   const login = useSelector(state => state.auth.login);
 
-  useEffect(() => {
-    return () => {
-      if (!login) navigate('/');
-    };
-  }, [login, navigate]);
+  // useEffect(() => {
+  //   console.log('test');
+  //   return () => {
+  //     if (!login) {
+  //       navigate('/welcome');
+  //     }
+  //   };
+  // }, [login, navigate]);
 
   const logoutHandler = () => {
     dispatch(AuthActions.authHandler(false));
+    navigate('/');
   };
 
   useEffect(() => {
