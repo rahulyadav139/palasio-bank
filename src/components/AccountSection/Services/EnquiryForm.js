@@ -1,7 +1,7 @@
 import styles from '../../Forms/UpdateForm.module.css';
 import Card from '../../UI/Card';
 import { Link } from 'react-router-dom';
-import useInput from '../../../hooks/use-input';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -20,36 +20,11 @@ const EnquiryForm = props => {
   console.log(productName);
 
   const profile = useSelector(state => state.bank.profile);
-  const {
-    value: password,
-    setIsTouched: passwordIsTouched,
-    isValid: passwordIsValid,
-    isInvalid: passwordIsInvalid,
-    changeHandler: passwordChangeHandler,
-    blurHandler: passwordBlurHandler,
-  } = useInput(value => value.trim().length !== 0);
-
-  const passwordClasses = passwordIsInvalid ? styles.invalid : '';
 
   const submitHandler = e => {
     e.preventDefault();
 
-    if (!passwordIsValid) passwordIsTouched(true);
-    if (account !== 'selected') setIsSelected(false);
-
-    if (!passwordIsValid || account !== 'selected') return;
-
-    if (password !== profile.authDetails.password) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Incorrect password!',
-          redirect: false,
-        })
-      );
-
-      return;
-    }
+    if (account !== 'selected') return setIsSelected(false);
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -79,7 +54,7 @@ const EnquiryForm = props => {
         <div className={styles.wrapper}>
           <div className={styles.inputs}>
             <label>Name</label>
-            <div className={styles.filled}>{profile.personalDetails.name}</div>
+            <div className={styles.filled}>{profile.fullName}</div>
           </div>
         </div>
         <div className={styles.wrapper}>
@@ -87,26 +62,12 @@ const EnquiryForm = props => {
             <label>Account</label>
             <select value={account} onChange={optionChangeHandler}>
               <option>--select--</option>
-              <option value="selected">
-                {profile.bankAccountDetails.accountNumber}
-              </option>
+              <option value="selected">{profile.accountNumber}</option>
             </select>
           </div>
           {!isSelected && <p className={styles.error}>Invalid entry</p>}
         </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Password</label>
-            <input
-              value={password}
-              className={passwordClasses}
-              onChange={passwordChangeHandler}
-              onBlur={passwordBlurHandler}
-              type="password"
-            />
-          </div>
-          {passwordIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
+
         <div className={styles.buttons}>
           <Link to="/account/overview">
             <button type="button">Cancel</button>

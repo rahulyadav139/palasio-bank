@@ -1,7 +1,6 @@
 import styles from './MainSection.module.css';
 import { PieChart } from 'react-minimal-pie-chart';
 import {
- 
   SliderIcon,
   RechargeIcon,
   SendMoneyIcon,
@@ -18,34 +17,46 @@ import {
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { currencyFormatter } from '../../../store/helper-functions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const MainSection = props => {
   const [showBalance, setShowBalance] = useState(false);
-
+  const [balance, setBalance] = useState({
+    savingAccountBalance: 0,
+    depositAccountBalance: 0,
+    totalBalance: 0,
+  });
   const activeProfile = useSelector(state => state.bank.profile);
+  const token = useSelector(state => state.auth.token);
 
-  const fixedDeposits = activeProfile.depositDetails;
-  const savingAccountBalance = +activeProfile.bankAccountDetails.accountBalance;
+  useEffect(() => {
+    (async () => {
+      const res = await fetch('https://palasio-bank.herokuapp.com/admin/balance', {
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
+      });
+      const data = await res.json();
 
-  const depositAccountBalance = +fixedDeposits.reduce(
-    (acc, el) => (acc += +el.sum),
-    0
-  );
-
-  const totalBalance = savingAccountBalance + depositAccountBalance;
+      setBalance({
+        savingAccountBalance: data.savingAccountBalance,
+        depositAccountBalance: data.depositAccountBalance,
+        totalBalance: data.savingAccountBalance + data.depositAccountBalance,
+      });
+    })();
+  }, [token]);
 
   const showSavingAccountBalance = showBalance
-    ? currencyFormatter(savingAccountBalance)
-    : ''.padStart(savingAccountBalance.toString().length, '*');
+    ? currencyFormatter(balance.savingAccountBalance)
+    : ''.padStart(balance.savingAccountBalance.toString().length, '*');
 
   const showDepositAccountBalance = showBalance
-    ? currencyFormatter(depositAccountBalance)
-    : ''.padStart(depositAccountBalance.toString().length, '*');
+    ? currencyFormatter(balance.depositAccountBalance)
+    : ''.padStart(balance.depositAccountBalance.toString().length, '*');
 
   const showTotalBalance = showBalance
-    ? currencyFormatter(totalBalance)
-    : ''.padStart(totalBalance.toString().length, '*');
+    ? currencyFormatter(balance.totalBalance)
+    : ''.padStart(balance.totalBalance.toString().length, '*');
 
   const showBalanceHandler = () => {
     setShowBalance(prev => !prev);
@@ -70,18 +81,18 @@ const MainSection = props => {
               <div className={styles.head2}>Total Balance</div>
               <div className={styles.head1}>{showTotalBalance}</div>
               <div className={styles.amounts}>
-                {!!totalBalance && (
+                {!!balance.totalBalance && (
                   <div className={styles.chart}>
                     <PieChart
                       data={[
                         {
                           title: 'One',
-                          value: savingAccountBalance,
+                          value: balance.savingAccountBalance,
                           color: '#7CD1B8',
                         },
                         {
                           title: 'Two',
-                          value: depositAccountBalance,
+                          value: balance.depositAccountBalance,
                           color: '#FABB51',
                         },
                       ]}
@@ -109,7 +120,9 @@ const MainSection = props => {
             <div className={styles.wrapper2}>
               <div className={styles.head2}>Savings</div>
               <div className={styles.head1}>{showSavingAccountBalance}</div>
-              <div className={styles.head1}>****9012</div>
+              <div className={styles.head1}>
+                {activeProfile.accountNumber.slice(-4).padStart(12, '*')}
+              </div>
               <Link to="/account/statement">
                 <div className={`${styles.head1} ${styles['text-colored']}`}>
                   View Statement

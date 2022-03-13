@@ -7,31 +7,43 @@ import { useState } from 'react';
 import useInput from '../../../hooks/use-input';
 import { ModalActions } from '../../../store/modal-slice';
 import { useLocation } from 'react-router-dom';
-import { BankActions } from '../../../store/bank-slice';
+
+import { useFetch } from '../../../hooks/use-fetch';
+import { useSend } from '../../../hooks/use-send';
 
 const UpgradeForm = props => {
   const [account, setAccount] = useState(0);
   const [isSelected, setIsSelected] = useState(true);
-  const profile = useSelector(state => state.bank.profile);
+  const basicDetails = useSelector(state => state.bank.profile);
   const dispatch = useDispatch();
+
+  const { sendData } = useSend();
 
   const location = useLocation();
 
   const upgradeType = location.pathname.split('/')[3].split('-')[0];
 
-  let currentProduct;
+  const { loading, error, profile } = useFetch(
+    'https://palasio-bank.herokuapp.com/service/upgrade'
+  );
 
-  switch (upgradeType) {
-    case 'debit':
-      currentProduct = profile.debitCardDetails.cardType;
-      break;
-    case 'credit':
-      currentProduct = profile.creditCardDetails.cardType;
-      break;
-    default:
-      currentProduct = profile.bankAccountDetails.accountType;
-      break;
-  }
+  const getCurrentProduct = () => {
+    let currentProduct;
+
+    switch (upgradeType) {
+      case 'debit':
+        currentProduct = profile.debitCardType;
+        break;
+      case 'credit':
+        currentProduct = profile.creditCardType;
+        break;
+      default:
+        currentProduct = profile.accountType;
+        break;
+    }
+
+    return currentProduct;
+  };
 
   const {
     value: password,
@@ -44,7 +56,7 @@ const UpgradeForm = props => {
 
   const passwordClasses = passwordIsInvalid ? styles.invalid : '';
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!passwordIsValid) passwordIsTouched(true);
@@ -52,7 +64,18 @@ const UpgradeForm = props => {
 
     if (!passwordIsValid || account !== 'selected') return;
 
-    if (password !== profile.authDetails.password) {
+    const upgrade = {
+      upgradeType,
+      upgradeTo: props.title,
+      password,
+    };
+
+    const { error, status } = await sendData(
+      'https://palasio-bank.herokuapp.com/service/upgrade',
+      upgrade
+    );
+
+    if (status === 401) {
       dispatch(
         ModalActions.confirmModalHandler({
           isModal: true,
@@ -60,14 +83,10 @@ const UpgradeForm = props => {
           redirect: false,
         })
       );
-
       return;
     }
-    const upgrade = {
-      upgradeType,
-      upgradeTo: props.title,
-    };
-    dispatch(BankActions.upgradeProducts(upgrade));
+
+    if (error) return;
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -85,59 +104,63 @@ const UpgradeForm = props => {
   };
   return (
     <Fragment>
-      <h2 className={styles.title}>Upgrade Form</h2>
-      <form className={styles.form} onSubmit={submitHandler}>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Name</label>
-            <div className={styles.filled}>{profile.personalDetails.name}</div>
-          </div>
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Account</label>
-            <select value={account} onChange={optionChangeHandler}>
-              <option>--select--</option>
-              <option value="selected">
-                {profile.bankAccountDetails.accountNumber}
-              </option>
-            </select>
-          </div>
-          {!isSelected && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Current</label>
-            <div className={styles.filled}>{currentProduct}</div>
-          </div>
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Upgrade to</label>
-            <div className={styles.filled}>{props.title}</div>
-          </div>
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Password</label>
-            <input
-              value={password}
-              className={passwordClasses}
-              onChange={passwordChangeHandler}
-              onBlur={passwordBlurHandler}
-              type="password"
-            />
-          </div>
-          {passwordIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.buttons}>
-          <Link to="/account/overview">
-            <button type="button">Cancel</button>
-          </Link>
+      {!loading && (
+        <Fragment>
+          <h2 className={styles.title}>Upgrade Form</h2>
+          <form className={styles.form} onSubmit={submitHandler}>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Name</label>
+                <div className={styles.filled}>{basicDetails.fullName}</div>
+              </div>
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Account</label>
+                <select value={account} onChange={optionChangeHandler}>
+                  <option>--select--</option>
+                  <option value="selected">{basicDetails.accountNumber}</option>
+                </select>
+              </div>
+              {!isSelected && <p className={styles.error}>Invalid entry</p>}
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Current</label>
+                <div className={styles.filled}>{getCurrentProduct()}</div>
+              </div>
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Upgrade to</label>
+                <div className={styles.filled}>{props.title}</div>
+              </div>
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Password</label>
+                <input
+                  value={password}
+                  className={passwordClasses}
+                  onChange={passwordChangeHandler}
+                  onBlur={passwordBlurHandler}
+                  type="password"
+                />
+              </div>
+              {passwordIsInvalid && (
+                <p className={styles.error}>Invalid entry</p>
+              )}
+            </div>
+            <div className={styles.buttons}>
+              <Link to="/account/overview">
+                <button type="button">Cancel</button>
+              </Link>
 
-          <button type="submit">Submit</button>
-        </div>
-      </form>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+        </Fragment>
+      )}
     </Fragment>
   );
 };

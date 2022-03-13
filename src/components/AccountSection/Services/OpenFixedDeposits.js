@@ -3,9 +3,10 @@ import Card from '../../UI/Card';
 import { useState, useEffect } from 'react';
 import { currencyFormatter } from '../../../store/helper-functions';
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { BankActions } from '../../../store/bank-slice';
+import { useDispatch } from 'react-redux';
+
 import { ModalActions } from '../../../store/modal-slice';
+import { useSend } from '../../../hooks/use-send';
 
 const OpenFixedDeposits = props => {
   const dispatch = useDispatch();
@@ -14,10 +15,7 @@ const OpenFixedDeposits = props => {
   const [sumIsTouched, setSumIsTouched] = useState(false);
   const [yearIsTouched, setYearIsTouched] = useState(false);
   const [interest, setInterest] = useState(3.7);
-
-  const accountBalance = useSelector(
-    state => state.bank.profile.bankAccountDetails.accountBalance
-  );
+  const { sendData } = useSend();
 
   const [maturityValue, setMaturityValue] = useState('');
 
@@ -102,7 +100,7 @@ const OpenFixedDeposits = props => {
     setYearIsTouched(true);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!sumIsValid) sumIsTouched(true);
@@ -110,7 +108,23 @@ const OpenFixedDeposits = props => {
 
     if (!sumIsValid || !yearIsValid) return;
 
-    if (sum > accountBalance) {
+    const newFD = {
+      sum,
+      rate: `${interest}%`,
+      maturityDate: getMaturityDate(year),
+      maturityValue: currencyFormatter(maturityValue),
+      interest: currencyFormatter(maturityValue - sum),
+    };
+
+   
+
+    const { error, status} = await sendData(
+      'https://palasio-bank.herokuapp.com/service/open-fixed-deposit',
+      newFD
+    );
+   
+
+    if (status === 404) {
       dispatch(
         ModalActions.confirmModalHandler({
           isModal: true,
@@ -121,15 +135,10 @@ const OpenFixedDeposits = props => {
       return;
     }
 
-    const newFD = {
-      sum,
-      rate: `${interest}%`,
-      maturityDate: getMaturityDate(year),
-      maturityValue: currencyFormatter(maturityValue),
-      interest: currencyFormatter(maturityValue - sum),
-    };
+  
 
-    dispatch(BankActions.openFixedDeposit(newFD));
+    if (error) return;
+
     dispatch(
       ModalActions.confirmModalHandler({
         isModal: true,
@@ -137,14 +146,6 @@ const OpenFixedDeposits = props => {
         redirect: true,
       })
     );
-
-    const newTransaction = {
-      amount: -sum,
-      time: new Date(Date.now()).toISOString(),
-      remark: 'fixed deposit',
-    };
-    dispatch(BankActions.billPayment(newTransaction));
-    dispatch(BankActions.saveToLocal());
   };
 
   const sumClasses = sumIsInvalid

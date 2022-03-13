@@ -66,7 +66,6 @@ const Header = props => {
             <h2 className={styles.subtitle}>
               A simpler banking experience for a simpler life.
             </h2>
-            {/* <button>Learn more ↓</button> */}
           </div>
           <div className={styles.images}>
             <div className={styles.img2}>

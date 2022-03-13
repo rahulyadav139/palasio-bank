@@ -2,13 +2,15 @@ import styles from '../../Forms/UpdateForm.module.css';
 import Card from '../../UI/Card';
 import { Link } from 'react-router-dom';
 import useInput from '../../../hooks/use-input';
-import { BankActions } from '../../../store/bank-slice';
 import { formatter } from '../../../store/helper-functions';
 import { useDispatch, useSelector } from 'react-redux';
 import { ModalActions } from '../../../store/modal-slice';
+import { useSend } from '../../../hooks/use-send';
 
 const UpdateNominee = props => {
   const dispatch = useDispatch();
+
+  const { sendData } = useSend();
 
   const profile = useSelector(state => state.bank.profile);
   const {
@@ -40,7 +42,7 @@ const UpdateNominee = props => {
   const relationClasses = relationIsInvalid ? styles.invalid : '';
   const passwordClasses = passwordIsInvalid ? styles.invalid : '';
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!nomineeIsValid) nomineeIsTouched(true);
@@ -49,7 +51,14 @@ const UpdateNominee = props => {
 
     if (!nomineeIsValid || !relationIsValid || !passwordIsValid) return;
 
-    if (password !== profile.authDetails.password) {
+    const nomineeDetails = `${formatter(nominee)} (${formatter(relation)})`;
+
+    const { error, status} = await sendData(
+      'https://palasio-bank.herokuapp.com/service/nominee',
+      { nomineeDetails, password }
+    );
+
+    if (status === 401) {
       dispatch(
         ModalActions.confirmModalHandler({
           isModal: true,
@@ -59,9 +68,9 @@ const UpdateNominee = props => {
       );
       return;
     }
-    const nomineeDetails = `${formatter(nominee)} (${formatter(relation)})`;
 
-    dispatch(BankActions.updateNominee(nomineeDetails));
+    if (error) return;
+
     dispatch(
       ModalActions.confirmModalHandler({
         isModal: true,
@@ -69,7 +78,6 @@ const UpdateNominee = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   return (
@@ -80,7 +88,7 @@ const UpdateNominee = props => {
           <div className={styles.inputs}>
             <label>Account Number</label>
             <select>
-              <option value="selected">1234 5678 1234 5678</option>
+              <option value="selected">{profile.accountNumber}</option>
             </select>
           </div>
         </div>

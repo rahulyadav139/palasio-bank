@@ -1,1 +1,6 @@
-This is a sample banking website named 'Palasio'.
+Project: Palasio Bank
+
+demo bank account details:
+
+username: rahulyadav
+password: 123456

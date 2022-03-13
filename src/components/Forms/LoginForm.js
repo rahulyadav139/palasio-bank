@@ -1,35 +1,20 @@
 import styles from './Form.module.css';
 import useInput from '../../hooks/use-input';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { AuthActions } from '../../store/auth-slice';
 import { ModalActions } from '../../store/modal-slice';
-import bankData from '../../store/bank-data.js';
+
 import { BankActions } from '../../store/bank-slice';
+import { useSend } from '../../hooks/use-send';
 
 const LoginForm = props => {
-  const login = useSelector(state => state.auth.login);
+  const { sendData } = useSend();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (login) {
-      dispatch(
-        ModalActions.loginModalHandler({
-          isModal: false,
-          LoginForm: true,
-        })
-      );
-    }
-
-    return () => {
-      if (login) {
-        return navigate('/account');
-      }
-    };
-  }, [login, navigate, dispatch]);
 
   const {
     value: username,
@@ -49,7 +34,7 @@ const LoginForm = props => {
     blurHandler: passwordBlurHandler,
   } = useInput(value => value.trim().length >= 6);
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
     if (!usernameIsValid) userNameIsTouched(true);
     if (!passwordIsValid) passwordIsTouched(true);
@@ -58,22 +43,39 @@ const LoginForm = props => {
       return;
     }
 
-    const profile = bankData.find(el => el.authDetails.username === username);
+    const { data, error, status } = await sendData(
+      'https://palasio-bank.herokuapp.com/auth/login',
+      {
+        username,
+        password,
+      }
+    );
 
-    if (!profile) {
-      setError('User Not Found!');
+    console.log(status);
+
+    if (status === 401) {
+      setError(data.message);
       return;
     }
-
-    if (profile.authDetails.password !== password) {
-      setError('Incorrect password!');
-      return;
-    }
+    if (error) return;
     setError(null);
 
-    dispatch(BankActions.initializeBanking(username));
+    dispatch(
+      ModalActions.loginModalHandler({
+        isModal: false,
+        loginForm: true,
+      })
+    );
 
-    dispatch(AuthActions.authHandler(true));
+    dispatch(
+      BankActions.initializeBanking({
+        fullName: data.fullName,
+        accountNumber: data.accountNumber,
+      })
+    );
+
+    dispatch(AuthActions.loginHandler({ token: data.token }));
+    navigate('/account');
   };
 
   const usernameClasses = usernameIsInvalid ? styles.invalid : '';

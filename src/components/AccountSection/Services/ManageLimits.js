@@ -1,27 +1,41 @@
 import styles from './ManageLimits.module.css';
 import Card from '../../UI/Card';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { BankActions } from '../../../store/bank-slice';
+
 import { ModalActions } from '../../../store/modal-slice';
+import { useSend } from '../../../hooks/use-send';
 
 const ManageLimits = props => {
-  const profile = useSelector(state => state.bank.profile);
+  const token = useSelector(state => state.auth.token);
   const dispatch = useDispatch();
+  const { sendData } = useSend();
 
-  const [dcWithdrawalLimit, setDcWithdrawalLimit] = useState(
-    profile.debitCardDetails.withdrawalLimit
-  );
-  const [ccWithdrawalLimit, setCcWithdrawalLimit] = useState(
-    profile.creditCardDetails.withdrawalLimit
-  );
-  const [dcPOSLimit, setDcPOSLimit] = useState(
-    profile.debitCardDetails.POSLimit
-  );
-  const [ccPOSLimit, setCcPOSLimit] = useState(
-    profile.creditCardDetails.POSLimit
-  );
+  const [dcWithdrawalLimit, setDcWithdrawalLimit] = useState(0);
+  const [ccWithdrawalLimit, setCcWithdrawalLimit] = useState(0);
+  const [dcPOSLimit, setDcPOSLimit] = useState(0);
+  const [ccPOSLimit, setCcPOSLimit] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('https://palasio-bank.herokuapp.com/service/limits', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        });
+        const data = await res.json();
+
+        setDcWithdrawalLimit(data.dcWithdrawalLimit);
+        setCcWithdrawalLimit(data.ccWithdrawalLimit);
+        setDcPOSLimit(data.dcPOSLimit);
+        setCcPOSLimit(data.ccPOSLimit);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [token]);
 
   const dcWithdrawalLimitChangeHandler = e => {
     if (!e.target.checkValidity()) {
@@ -64,7 +78,7 @@ const ManageLimits = props => {
     if (e.key === '.' || e.key === 'e' || e.key === '-') e.preventDefault();
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     const newLimits = {
@@ -74,8 +88,13 @@ const ManageLimits = props => {
       ccPOSLimit,
     };
 
-    dispatch(BankActions.updateLimits(newLimits));
-    dispatch(BankActions.saveToLocal());
+    const [data, error, status] = await sendData(
+      'https://palasio-bank.herokuapp.com/service/limits',
+      newLimits
+    );
+
+    if (error) return;
+
     dispatch(
       ModalActions.confirmModalHandler({
         isModal: true,

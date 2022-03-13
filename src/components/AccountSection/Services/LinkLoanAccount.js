@@ -5,13 +5,15 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { ModalActions } from '../../../store/modal-slice';
-import { BankActions } from '../../../store/bank-slice';
+
+import { useSend } from '../../../hooks/use-send';
 
 const LinkLoanAccount = props => {
   const [isSelected, setIsSelected] = useState(true);
   const [loanType, setLoanType] = useState('unselected');
   const dispatch = useDispatch();
 
+  const { sendData } = useSend();
   const {
     value: loanAccountNumber,
     setIsTouched: loanAccountNumberIsTouched,
@@ -29,22 +31,38 @@ const LinkLoanAccount = props => {
     if (e.target.type !== 'unselected') setIsSelected(true);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
     if (!loanAccountNumberIsValid) loanAccountNumberIsTouched(true);
     if (loanType === 'unselected') setIsSelected(false);
 
     if (!loanAccountNumberIsValid || loanType === 'unselected') return;
 
-    dispatch(
-      BankActions.linkLoanAccount({
-        loanAccountNumber,
-        loanType,
-        period: 5,
-        sum: '5,00,000',
-        emi: '12,000',
-      })
+    const newLoanDetails = {
+      loanAccountNumber,
+      loanType,
+      period: 5,
+      sum: '5,00,000',
+      emi: '12,000',
+    };
+
+    const { error, status } = await sendData(
+      'https://palasio-bank.herokuapp.com/service/loan',
+      newLoanDetails
     );
+
+    if (status === 401) {
+      dispatch(
+        ModalActions.confirmModalHandler({
+          isModal: true,
+          message: 'Incorrect password!',
+          redirect: false,
+        })
+      );
+      return;
+    }
+
+    if (error) return;
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -53,7 +71,6 @@ const LinkLoanAccount = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   return (
