@@ -3,17 +3,19 @@ import Card from '../../UI/Card';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCityDetails } from '../../../store/helper-slice';
-import { BankActions } from '../../../store/bank-slice';
+
 import useInput from '../../../hooks/use-input';
 import { Link } from 'react-router-dom';
 import { HelperActions } from '../../../store/helper-slice';
 import { ModalActions } from '../../../store/modal-slice';
 import { formatter } from '../../../store/helper-functions';
-
+import { useSend } from '../../../hooks/use-send';
 const ChangeAddress = props => {
   const helper = useSelector(state => state.helper);
-  const profile = useSelector(state => state.bank.profile);
+
   const dispatch = useDispatch();
+
+  const { sendData } = useSend();
 
   const {
     value: addressLineOne,
@@ -60,7 +62,7 @@ const ChangeAddress = props => {
 
   const { city, state } = helper;
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
     if (!addressLineOneIsValid) addressLineOneIsTouched(true);
     if (!addressLineTwoIsValid) addressLineTwoIsTouched(true);
@@ -75,7 +77,18 @@ const ChangeAddress = props => {
     )
       return;
 
-    if (password !== profile.authDetails.password) {
+    const newAddress = `${formatter(addressLineOne)} ${formatter(
+      addressLineTwo
+    )}, ${city}, ${state} ${pin}`;
+
+    dispatch(HelperActions.reset());
+
+    const { data, error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/change-address',
+      { password, newAddress }
+    );
+
+    if (status === 401) {
       return dispatch(
         ModalActions.confirmModalHandler({
           isModal: true,
@@ -85,14 +98,7 @@ const ChangeAddress = props => {
       );
     }
 
-    if (password === profile.authDetails.password) {
-      const newAddress = `${formatter(addressLineOne)} ${formatter(
-        addressLineTwo
-      )}, ${city}, ${state} ${pin}`;
-
-      dispatch(BankActions.updateAddress(newAddress));
-    }
-    dispatch(HelperActions.reset());
+    if (error) return;
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -101,7 +107,6 @@ const ChangeAddress = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   return (
@@ -156,14 +161,12 @@ const ChangeAddress = props => {
             <label>State</label>
             <div className={styles.filled}>{state}</div>
           </div>
-          {/* <p className={styles.error}>Invalid entry</p> */}
         </div>
         <div className={styles.wrapper}>
           <div className={styles.inputs}>
             <label>City</label>
             <div className={styles.filled}>{city}</div>
           </div>
-          {/* <p className={styles.error}>Invalid entry</p> */}
         </div>
         <div className={styles.wrapper}>
           <div className={styles.inputs}>

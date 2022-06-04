@@ -2,13 +2,13 @@ import { Link } from 'react-router-dom';
 import styles from '../../Forms/UpdateForm.module.css';
 import Card from '../../UI/Card';
 import useInput from '../../../hooks/use-input';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ModalActions } from '../../../store/modal-slice';
-import { BankActions } from '../../../store/bank-slice';
+import { useSend } from '../../../hooks/use-send';
 
 const ChangePassword = props => {
-  const profile = useSelector(state => state.bank.profile);
   const dispatch = useDispatch();
+  const { sendData } = useSend();
 
   const {
     value: oldPassword,
@@ -25,7 +25,7 @@ const ChangePassword = props => {
     isInvalid: newPasswordIsInvalid,
     changeHandler: newPasswordChangeHandler,
     blurHandler: newPasswordBlurHandler,
-  } = useInput(value => value.trim().length >= 8);
+  } = useInput(value => value.trim().length >= 6);
   const {
     value: confirmPassword,
     setIsTouched: confirmPasswordIsTouched,
@@ -39,7 +39,7 @@ const ChangePassword = props => {
   const newPasswordClasses = newPasswordIsInvalid ? styles.invalid : '';
   const confirmPasswordClasses = confirmPasswordIsInvalid ? styles.invalid : '';
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!oldPasswordIsValid) oldPasswordIsTouched(true);
@@ -49,16 +49,6 @@ const ChangePassword = props => {
     if (!oldPasswordIsValid || !newPasswordIsValid || !confirmPasswordIsValid)
       return;
 
-    if (oldPassword !== profile.authDetails.password) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Incorrect Password!',
-          redirect: false,
-        })
-      );
-      return;
-    }
     if (newPassword !== confirmPassword) {
       dispatch(
         ModalActions.confirmModalHandler({
@@ -70,7 +60,23 @@ const ChangePassword = props => {
       return;
     }
 
-    dispatch(BankActions.changePassword(newPassword));
+    const { data, error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/change-password',
+      { oldPassword, newPassword }
+    );
+
+    if (status === 401) {
+      dispatch(
+        ModalActions.confirmModalHandler({
+          isModal: true,
+          message: data.message,
+          redirect: false,
+        })
+      );
+      return;
+    }
+
+    if (error) return;
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -79,7 +85,6 @@ const ChangePassword = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   return (

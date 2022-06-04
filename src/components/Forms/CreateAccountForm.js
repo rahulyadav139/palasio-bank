@@ -3,18 +3,15 @@ import useInput from '../../hooks/use-input';
 import { useDispatch } from 'react-redux';
 import { formatter } from '../../store/helper-functions';
 import { BankActions } from '../../store/bank-slice';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ModalActions } from '../../store/modal-slice';
 import { AuthActions } from '../../store/auth-slice';
-import { useSelector } from 'react-redux';
-import bankData from '../../store/bank-data';
 
 const CreateAccountForm = props => {
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const login = useSelector(state => state.auth.login);
 
   const {
     value: firstName,
@@ -78,24 +75,7 @@ const CreateAccountForm = props => {
   const createPasswordClasses = createPasswordIsInValid ? styles.invalid : '';
   const confirmPasswordClasses = confirmPasswordIsInValid ? styles.invalid : '';
 
-  useEffect(() => {
-    if (login) {
-      dispatch(
-        ModalActions.loginModalHandler({
-          isModal: false,
-          LoginForm: true,
-        })
-      );
-    }
-
-    return () => {
-      if (login) {
-        return navigate('/account');
-      }
-    };
-  }, [login, navigate, dispatch]);
-
-  const createAccountSubmitHandler = e => {
+  const createAccountSubmitHandler = async e => {
     e.preventDefault();
 
     if (!firstNameIsValid) firstNameIsTouched(true);
@@ -115,36 +95,51 @@ const CreateAccountForm = props => {
     ) {
       return;
     }
-    const profile = bankData.find(
-      el => el.authDetails.username === createUserName
-    );
-    if (profile) {
-      setError('Username already exists!');
-      return;
-    }
-    const profileEmail = bankData.find(
-      el => el.personalDetails.email === email
-    );
 
-    if (profileEmail) {
-      setError('Another user exists with same email!');
-      return;
-    }
-    if (createPassword !== confirmPassword) {
-      setError('Password does not match!');
-      return;
-    }
     const newUserDetails = {
-      name: `${formatter(firstName.trim())} ${formatter(lastName.trim())}`,
-      email,
+      fullName: `${formatter(firstName.trim())} ${formatter(lastName.trim())}`,
+      email: email.toLowerCase(),
       username: createUserName,
       password: createPassword,
     };
     setError(null);
-    dispatch(BankActions.crateNewAccount(newUserDetails));
 
-    dispatch(BankActions.initializeBanking(createUserName));
-    dispatch(AuthActions.authHandler(true));
+    const res = await fetch(
+      process.env.REACT_APP_BACKEND_URL + '/auth/signup',
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUserDetails),
+      }
+    );
+
+    const data = await res.json();
+
+    if (res.status === 401) {
+      setError(data.message);
+      return;
+    }
+    setError(null);
+
+    dispatch(
+      ModalActions.loginModalHandler({
+        isModal: false,
+        loginForm: true,
+      })
+    );
+
+    dispatch(
+      BankActions.initializeBanking({
+        fullName: data.fullName,
+        accountNumber: data.accountNumber,
+      })
+    );
+
+    dispatch(AuthActions.loginHandler({ token: data.token }));
+
+    navigate('/account');
   };
   return (
     <form onSubmit={createAccountSubmitHandler} className={styles.form}>

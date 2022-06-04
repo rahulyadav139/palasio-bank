@@ -6,16 +6,16 @@ import Card from '../../UI/Card';
 import { useSelector, useDispatch } from 'react-redux';
 import { ModalActions } from '../../../store/modal-slice';
 import { useParams } from 'react-router-dom';
-import { BankActions } from '../../../store/bank-slice';
-import bankData from '../../../store/bank-data';
+
+import { useSend } from '../../../hooks/use-send';
 
 const Transfer = props => {
+  const { sendData } = useSend();
   const [transferFrom, setTransferFrom] = useState(0);
   const [isSelected, setIsSelected] = useState(true);
   const profile = useSelector(state => state.bank.profile);
   const dispatch = useDispatch();
   const params = useParams();
-  const accountBalance = profile.bankAccountDetails.accountBalance;
 
   const {
     value: sendToAccNumber,
@@ -72,7 +72,7 @@ const Transfer = props => {
     else setIsSelected(false);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!sendToAccNumberIsValid) sendToAccNumberIsTouched(true);
@@ -103,64 +103,35 @@ const Transfer = props => {
       return;
     }
 
-    if (password !== profile.authDetails.password) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Incorrect password!',
-          redirect: false,
-        })
-      );
-      return;
-    }
-
-    const receiverIndex = bankData.findIndex(
-      el => el.bankAccountDetails.accountNumber === sendToAccNumber
-    );
-
-    if (receiverIndex === -1) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Invalid account number!',
-          redirect: false,
-        })
-      );
-      return;
-    }
-    if (bankData[receiverIndex].bankAccountDetails.ifsc !== ifsc) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Invalid IFSC!',
-          redirect: false,
-        })
-      );
-      return;
-    }
-
-    if (amount > accountBalance) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Insufficient account balance!',
-          redirect: true,
-        })
-      );
-      return;
-    }
-
     const newTransaction = {
       amount: amount,
       time: new Date(Date.now()).toISOString(),
       senderRemark: `${params.paymentMethod.toUpperCase()} Fund Transfer to ${sendToAccNumber}`,
       receiverRemark: `${params.paymentMethod.toUpperCase()} Fund Received from ${
-        profile.bankAccountDetails.accountNumber
+        profile.accountNumber
       }`,
-      receiverIndex,
+      sendToAccNumber,
+      ifsc,
     };
 
-    dispatch(BankActions.moneyTransfer(newTransaction));
+    const {data, error, status} = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/transfer',
+      { newTransaction, password }
+    );
+
+    if (status === 401) {
+      dispatch(
+        ModalActions.confirmModalHandler({
+          isModal: true,
+          message: data.message,
+          redirect: false,
+        })
+      );
+      return;
+    }
+
+    if (error) return;
+
     dispatch(
       ModalActions.confirmModalHandler({
         isModal: true,
@@ -168,7 +139,6 @@ const Transfer = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
   return (
     <Card>
@@ -182,9 +152,7 @@ const Transfer = props => {
             <label>Transfer From</label>
             <select value={transferFrom} onChange={optionChangeHandler}>
               <option>--select--</option>
-              <option value="selected">
-                {profile.bankAccountDetails.accountNumber}
-              </option>
+              <option value="selected">{profile.accountNumber}</option>
             </select>
           </div>
           {!isSelected && <p className={styles.error}>Invalid entry</p>}

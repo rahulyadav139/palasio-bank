@@ -1,13 +1,14 @@
 import Card from '../../UI/Card';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { BankActions } from '../../../store/bank-slice';
+
 import useInput from '../../../hooks/use-input';
 import { useState } from 'react';
 import { formatter } from '../../../store/helper-functions';
 import { Link } from 'react-router-dom';
 import styles from '../../Forms/UpdateForm.module.css';
 import { ModalActions } from '../../../store/modal-slice';
+import { useSend } from '../../../hooks/use-send';
 
 const BillServiceProvidersData = {
   electricity: [
@@ -22,6 +23,8 @@ const BillServiceProvidersData = {
 };
 
 const BillPayment = props => {
+  const { sendData } = useSend();
+
   const [accountNumber, setAccountNumber] = useState('unselected');
   const [isAccountNumberSelected, setIsAccountNumberSelected] = useState(true);
   const [serviceProvider, setServiceProvider] = useState('unselected');
@@ -29,8 +32,8 @@ const BillPayment = props => {
     useState(true);
 
   const profile = useSelector(state => state.bank.profile);
-  const accNumber = profile.bankAccountDetails.accountNumber;
-  const accBalance = profile.bankAccountDetails.accountBalance;
+  const accNumber = profile.accountNumber;
+
   const dispatch = useDispatch();
   const params = useParams();
   const billServiceProviders = BillServiceProvidersData[params.billType];
@@ -63,7 +66,7 @@ const BillPayment = props => {
     setServiceProvider(e.target.value);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (accountNumber === 'unselected') setIsAccountNumberSelected(false);
@@ -79,7 +82,29 @@ const BillPayment = props => {
     )
       return;
 
-    if (password !== profile.authDetails.password) {
+    const newTransaction = {
+      amount: -amount,
+      time: new Date(Date.now()).toISOString(),
+      remark: `${formatter(params.billType)} Payment - ${serviceProvider}`,
+    };
+
+    const { data, error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/bill-payment',
+      { newTransaction, password }
+    );
+
+    if (status === 404) {
+      dispatch(
+        ModalActions.confirmModalHandler({
+          isModal: true,
+          message: 'Insufficient balance!',
+          redirect: false,
+        })
+      );
+      return;
+    }
+
+    if (status === 401) {
       dispatch(
         ModalActions.confirmModalHandler({
           isModal: true,
@@ -90,23 +115,8 @@ const BillPayment = props => {
       return;
     }
 
-    if (amount > accBalance) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Insufficient account balance!',
-          redirect: true,
-        })
-      );
-      return;
-    }
+    if (error) return;
 
-    const newTransaction = {
-      amount: -amount,
-      time: new Date(Date.now()).toISOString(),
-      remark: `${formatter(params.billType)} Payment - ${serviceProvider}`,
-    };
-    dispatch(BankActions.billPayment(newTransaction));
     dispatch(
       ModalActions.confirmModalHandler({
         isModal: true,
@@ -114,7 +124,6 @@ const BillPayment = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   return (

@@ -9,23 +9,10 @@ const Header = props => {
   const [time, setTime] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const fullName = useSelector(
-    state => state.bank.profile.personalDetails.name
-  );
-
-  const login = useSelector(state => state.auth.login);
-
-  // useEffect(() => {
-  //   console.log('test');
-  //   return () => {
-  //     if (!login) {
-  //       navigate('/welcome');
-  //     }
-  //   };
-  // }, [login, navigate]);
+  const fullName = useSelector(state => state.bank.profile.fullName);
 
   const logoutHandler = () => {
-    dispatch(AuthActions.authHandler(false));
+    dispatch(AuthActions.logoutHandler());
     navigate('/');
   };
 

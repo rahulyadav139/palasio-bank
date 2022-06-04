@@ -4,10 +4,12 @@ import Card from '../../UI/Card';
 import sampleDebitCardImage from '../../../Assets/sample-debit-card.jpg';
 import useInput from '../../../hooks/use-input';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { BankActions } from '../../../store/bank-slice';
-import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+
+import { Fragment, useState } from 'react';
 import { ModalActions } from '../../../store/modal-slice';
+import { useFetch } from '../../../hooks/use-fetch';
+import { useSend } from '../../../hooks/use-send';
 
 const GenerateCardPIN = props => {
   const [card, setCard] = useState('');
@@ -15,7 +17,11 @@ const GenerateCardPIN = props => {
   const [isSelected, setIsSelected] = useState(true);
   const [cardType, setCardType] = useState('');
   const dispatch = useDispatch();
-  const profile = useSelector(state => state.bank.profile);
+  const { sendData } = useSend();
+
+  const { loading, profile } = useFetch(
+    process.env.REACT_APP_BACKEND_URL + '/admin/cards'
+  );
 
   const {
     value: cvv,
@@ -55,7 +61,7 @@ const GenerateCardPIN = props => {
   const confirmPinClasses = confirmPinIsInvalid ? styles.invalid : '';
   const passwordClasses = passwordIsInvalid ? styles.invalid : '';
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
 
     if (!cvvIsValid) cvvIsTouched(true);
@@ -73,20 +79,8 @@ const GenerateCardPIN = props => {
     )
       return;
 
-    if (password !== profile.authDetails.password) {
-      dispatch(
-        ModalActions.confirmModalHandler({
-          isModal: true,
-          message: 'Incorrect password!',
-          redirect: false,
-        })
-      );
-
-      return;
-    }
-
     if (card === 'debit') {
-      if (cvv !== profile.debitCardDetails.cvv) {
+      if (Number(cvv) !== profile.debitCardDetails.cvv) {
         dispatch(
           ModalActions.confirmModalHandler({
             isModal: true,
@@ -97,7 +91,7 @@ const GenerateCardPIN = props => {
         return;
       }
     } else {
-      if (cvv !== profile.creditCardDetails.cvv) {
+      if (Number(cvv) !== profile.creditCardDetails.cvv) {
         dispatch(
           ModalActions.confirmModalHandler({
             isModal: true,
@@ -118,7 +112,23 @@ const GenerateCardPIN = props => {
       );
     }
 
-    dispatch(BankActions.updateDebitCardPin(newPin));
+    const { error, status} = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/update-pin',
+      { newPin, cardType: card, password }
+    );
+
+    if (status == 401) {
+      dispatch(
+        ModalActions.confirmModalHandler({
+          isModal: true,
+          message: 'Incorrect password!',
+          redirect: false,
+        })
+      );
+      return;
+    }
+
+    if (error) return;
 
     dispatch(
       ModalActions.confirmModalHandler({
@@ -127,7 +137,6 @@ const GenerateCardPIN = props => {
         redirect: true,
       })
     );
-    dispatch(BankActions.saveToLocal());
   };
 
   const optionChangeHandler = e => {
@@ -144,99 +153,107 @@ const GenerateCardPIN = props => {
     else setIsSelected(false);
   };
   return (
-    <Card>
-      <div className={styles.box}>
-        <div className={styles.image}>
-          <img src={sampleDebitCardImage} alt="sample-debit-card" />
-        </div>
-      </div>
+    <Fragment>
+      {!loading && (
+        <Card>
+          <div className={styles.box}>
+            <div className={styles.image}>
+              <img src={sampleDebitCardImage} alt="sample-debit-card" />
+            </div>
+          </div>
 
-      <h2 className={styles.title}>Generate Card PIN</h2>
+          <h2 className={styles.title}>Generate Card PIN</h2>
 
-      <form onSubmit={submitHandler} className={styles.form}>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Debit Card</label>
-            <select value={cardNumber} onChange={optionChangeHandler}>
-              <option value="unselected">--select card--</option>
-              <option value={profile.debitCardDetails.cardNumber}>
-                {profile.debitCardDetails.cardNumber}
-              </option>
-              <option value={profile.creditCardDetails.cardNumber}>
-                {profile.creditCardDetails.cardNumber}
-              </option>
-            </select>
-          </div>
-          {!isSelected && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Card Name</label>
-            <div className={styles.filled}>{cardType}</div>
-          </div>
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>CVV Number</label>
-            <input
-              value={cvv}
-              className={cvvClasses}
-              onChange={cvvChangeHandler}
-              onBlur={cvvBlurHandler}
-              type="text"
-            />
-          </div>
-          {cvvIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>New PIN</label>
-            <input
-              value={newPin}
-              className={newPinClasses}
-              onChange={newPinChangeHandler}
-              onBlur={newPinBlurHandler}
-              type="number"
-            />
-          </div>
-          {newPinIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
+          <form onSubmit={submitHandler} className={styles.form}>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Debit Card</label>
+                <select value={cardNumber} onChange={optionChangeHandler}>
+                  <option value="unselected">--select card--</option>
+                  <option value={profile.debitCardDetails.cardNumber}>
+                    {profile.debitCardDetails.cardNumber}
+                  </option>
+                  <option value={profile.creditCardDetails.cardNumber}>
+                    {profile.creditCardDetails.cardNumber}
+                  </option>
+                </select>
+              </div>
+              {!isSelected && <p className={styles.error}>Invalid entry</p>}
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Card Name</label>
+                <div className={styles.filled}>{cardType}</div>
+              </div>
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>CVV Number</label>
+                <input
+                  value={cvv}
+                  className={cvvClasses}
+                  onChange={cvvChangeHandler}
+                  onBlur={cvvBlurHandler}
+                  type="text"
+                />
+              </div>
+              {cvvIsInvalid && <p className={styles.error}>Invalid entry</p>}
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>New PIN</label>
+                <input
+                  value={newPin}
+                  className={newPinClasses}
+                  onChange={newPinChangeHandler}
+                  onBlur={newPinBlurHandler}
+                  type="number"
+                />
+              </div>
+              {newPinIsInvalid && <p className={styles.error}>Invalid entry</p>}
+            </div>
 
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Confirm PIN</label>
-            <input
-              value={confirmPin}
-              className={confirmPinClasses}
-              onChange={confirmPinChangeHandler}
-              onBlur={confirmPinBlurHandler}
-              type="text"
-            />
-          </div>
-          {confirmPinIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.wrapper}>
-          <div className={styles.inputs}>
-            <label>Password</label>
-            <input
-              value={password}
-              className={passwordClasses}
-              onChange={passwordChangeHandler}
-              onBlur={passwordBlurHandler}
-              type="password"
-            />
-          </div>
-          {passwordIsInvalid && <p className={styles.error}>Invalid entry</p>}
-        </div>
-        <div className={styles.buttons}>
-          <Link to="/account/overview">
-            <button type="button">Cancel</button>
-          </Link>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Confirm PIN</label>
+                <input
+                  value={confirmPin}
+                  className={confirmPinClasses}
+                  onChange={confirmPinChangeHandler}
+                  onBlur={confirmPinBlurHandler}
+                  type="text"
+                />
+              </div>
+              {confirmPinIsInvalid && (
+                <p className={styles.error}>Invalid entry</p>
+              )}
+            </div>
+            <div className={styles.wrapper}>
+              <div className={styles.inputs}>
+                <label>Password</label>
+                <input
+                  value={password}
+                  className={passwordClasses}
+                  onChange={passwordChangeHandler}
+                  onBlur={passwordBlurHandler}
+                  type="password"
+                />
+              </div>
+              {passwordIsInvalid && (
+                <p className={styles.error}>Invalid entry</p>
+              )}
+            </div>
+            <div className={styles.buttons}>
+              <Link to="/account/overview">
+                <button type="button">Cancel</button>
+              </Link>
 
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </Card>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+        </Card>
+      )}
+    </Fragment>
   );
 };
 export default GenerateCardPIN;

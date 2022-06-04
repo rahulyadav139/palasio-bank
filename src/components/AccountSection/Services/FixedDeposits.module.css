@@ -4,7 +4,6 @@
   color: #3e8e7e;
 }
 .wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
 }
