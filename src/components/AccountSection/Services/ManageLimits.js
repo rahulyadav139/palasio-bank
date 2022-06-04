@@ -20,11 +20,14 @@ const ManageLimits = props => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('https://palasio-bank.herokuapp.com/service/limits', {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        });
+        const res = await fetch(
+          process.env.REACT_APP_BACKEND_URL + '/service/limits',
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          }
+        );
         const data = await res.json();
 
         setDcWithdrawalLimit(data.dcWithdrawalLimit);
@@ -89,7 +92,7 @@ const ManageLimits = props => {
     };
 
     const [data, error, status] = await sendData(
-      'https://palasio-bank.herokuapp.com/service/limits',
+      process.env.REACT_APP_BACKEND_URL + '/service/limits',
       newLimits
     );
 

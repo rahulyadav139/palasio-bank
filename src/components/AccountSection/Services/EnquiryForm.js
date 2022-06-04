@@ -17,7 +17,6 @@ const EnquiryForm = props => {
   const productName = financialData.find(
     el => el.id === params.productId
   ).title;
-  console.log(productName);
 
   const profile = useSelector(state => state.bank.profile);
 

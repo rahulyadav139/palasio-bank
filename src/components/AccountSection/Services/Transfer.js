@@ -115,7 +115,7 @@ const Transfer = props => {
     };
 
     const {data, error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/transfer',
+      process.env.REACT_APP_BACKEND_URL + '/service/transfer',
       { newTransaction, password }
     );
 

@@ -24,7 +24,7 @@ const UpgradeForm = props => {
   const upgradeType = location.pathname.split('/')[3].split('-')[0];
 
   const { loading, error, profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/service/upgrade'
+    process.env.REACT_APP_BACKEND_URL + '/service/upgrade'
   );
 
   const getCurrentProduct = () => {
@@ -71,7 +71,7 @@ const UpgradeForm = props => {
     };
 
     const { error, status } = await sendData(
-      'https://palasio-bank.herokuapp.com/service/upgrade',
+      process.env.REACT_APP_BACKEND_URL + '/service/upgrade',
       upgrade
     );
 

@@ -104,13 +104,16 @@ const CreateAccountForm = props => {
     };
     setError(null);
 
-    const res = await fetch('https://palasio-bank.herokuapp.com/auth/signup', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newUserDetails),
-    });
+    const res = await fetch(
+      process.env.REACT_APP_BACKEND_URL + '/auth/signup',
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUserDetails),
+      }
+    );
 
     const data = await res.json();
 

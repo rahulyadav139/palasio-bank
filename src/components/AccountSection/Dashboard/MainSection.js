@@ -31,11 +31,14 @@ const MainSection = props => {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch('https://palasio-bank.herokuapp.com/admin/balance', {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      });
+      const res = await fetch(
+        process.env.REACT_APP_BACKEND_URL + '/admin/balance',
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        }
+      );
       const data = await res.json();
 
       setBalance({

@@ -16,8 +16,6 @@ const useSend = () => {
       });
       status = res.status;
 
-      console.log(typeof status);
-
       data = await res.json();
     } catch (err) {
       error = err;

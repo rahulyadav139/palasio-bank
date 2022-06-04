@@ -44,19 +44,53 @@ const LoginForm = props => {
     }
 
     const { data, error, status } = await sendData(
-      'https://palasio-bank.herokuapp.com/auth/login',
+      process.env.REACT_APP_BACKEND_URL + '/auth/login',
       {
         username,
         password,
       }
     );
 
-    console.log(status);
-
     if (status === 401) {
       setError(data.message);
       return;
     }
+    if (error) return;
+    setError(null);
+
+    dispatch(
+      ModalActions.loginModalHandler({
+        isModal: false,
+        loginForm: true,
+      })
+    );
+
+    dispatch(
+      BankActions.initializeBanking({
+        fullName: data.fullName,
+        accountNumber: data.accountNumber,
+      })
+    );
+
+    dispatch(AuthActions.loginHandler({ token: data.token }));
+    navigate('/account');
+  };
+
+  const guestLoginHandler = async e => {
+    e.preventDefault();
+
+    console.log(process.env.REACT_APP_TEST_LOGIN_USERNAME);
+
+    const { data, error } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/auth/login',
+      {
+        username: process.env.REACT_APP_TEST_LOGIN_USERNAME,
+        password: process.env.REACT_APP_TEST_LOGIN_PASSWORD,
+      }
+    );
+
+    console.log(data);
+
     if (error) return;
     setError(null);
 
@@ -119,6 +153,9 @@ const LoginForm = props => {
         )}
       </div>
       <div className={styles.buttons}>
+        <button type="button" onClick={guestLoginHandler}>
+          Guest Login
+        </button>
         <button type="button" onClick={props.onCancel}>
           Cancel
         </button>

@@ -8,7 +8,7 @@ import { Fragment } from 'react';
 
 const FixedDeposits = props => {
   const { loading, error, profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/admin/deposits'
+    process.env.REACT_APP_BACKEND_URL + '/admin/deposits'
   );
 
   return (

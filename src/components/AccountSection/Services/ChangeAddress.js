@@ -83,8 +83,8 @@ const ChangeAddress = props => {
 
     dispatch(HelperActions.reset());
 
-    const {data, error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/change-address',
+    const { data, error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/change-address',
       { password, newAddress }
     );
 

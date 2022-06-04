@@ -9,8 +9,8 @@ import { currencyFormatter } from '../../../store/helper-functions';
 import { useFetch } from '../../../hooks/use-fetch';
 
 const Statement = props => {
-  const { loading,  profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/admin/statement'
+  const { loading, profile } = useFetch(
+    process.env.REACT_APP_BACKEND_URL + '/admin/statement'
   );
 
   const [isAscending, setIsAscending] = useState(false);

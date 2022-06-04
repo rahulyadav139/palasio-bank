@@ -116,13 +116,10 @@ const OpenFixedDeposits = props => {
       interest: currencyFormatter(maturityValue - sum),
     };
 
-   
-
-    const { error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/open-fixed-deposit',
+    const { error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/open-fixed-deposit',
       newFD
     );
-   
 
     if (status === 404) {
       dispatch(
@@ -134,8 +131,6 @@ const OpenFixedDeposits = props => {
       );
       return;
     }
-
-  
 
     if (error) return;
 

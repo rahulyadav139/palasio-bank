@@ -19,11 +19,14 @@ const AccountDetails = props => {
 
   useEffect(() => {
     (async () => {
-      const res = await fetch('https://palasio-bank.herokuapp.com/admin/account', {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      });
+      const res = await fetch(
+        process.env.REACT_APP_BACKEND_URL + '/admin/account',
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        }
+      );
       const data = await res.json();
       setProfile(data);
     })();

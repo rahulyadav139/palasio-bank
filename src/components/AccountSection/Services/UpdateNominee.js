@@ -53,8 +53,8 @@ const UpdateNominee = props => {
 
     const nomineeDetails = `${formatter(nominee)} (${formatter(relation)})`;
 
-    const { error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/nominee',
+    const { error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/nominee',
       { nomineeDetails, password }
     );
 

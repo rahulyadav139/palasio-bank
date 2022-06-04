@@ -61,7 +61,7 @@ const ChangePassword = props => {
     }
 
     const { data, error, status } = await sendData(
-      'https://palasio-bank.herokuapp.com/service/change-password',
+      process.env.REACT_APP_BACKEND_URL + '/service/change-password',
       { oldPassword, newPassword }
     );
 

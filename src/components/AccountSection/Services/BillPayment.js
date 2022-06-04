@@ -88,8 +88,8 @@ const BillPayment = props => {
       remark: `${formatter(params.billType)} Payment - ${serviceProvider}`,
     };
 
-    const {data, error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/bill-payment',
+    const { data, error, status } = await sendData(
+      process.env.REACT_APP_BACKEND_URL + '/service/bill-payment',
       { newTransaction, password }
     );
 

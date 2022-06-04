@@ -7,7 +7,7 @@ import { useFetch } from '../../../hooks/use-fetch';
 
 const CardAndLoans = props => {
   const { loading, profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/admin/loans'
+    process.env.REACT_APP_BACKEND_URL + '/admin/loans'
   );
 
   const loans = profile.loanAccountDetails;

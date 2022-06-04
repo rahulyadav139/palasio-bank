@@ -20,7 +20,7 @@ const GenerateCardPIN = props => {
   const { sendData } = useSend();
 
   const { loading, profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/admin/cards'
+    process.env.REACT_APP_BACKEND_URL + '/admin/cards'
   );
 
   const {
@@ -113,7 +113,7 @@ const GenerateCardPIN = props => {
     }
 
     const { error, status} = await sendData(
-      'https://palasio-bank.herokuapp.com/service/update-pin',
+      process.env.REACT_APP_BACKEND_URL + '/service/update-pin',
       { newPin, cardType: card, password }
     );
 

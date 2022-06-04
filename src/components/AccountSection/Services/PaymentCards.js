@@ -11,7 +11,7 @@ const PaymentCards = props => {
   const [showCreditCard, setShowCreditCard] = useState(false);
 
   const { loading, error, profile } = useFetch(
-    'https://palasio-bank.herokuapp.com/admin/cards'
+    process.env.REACT_APP_BACKEND_URL + '/admin/cards'
   );
 
   const getDetails = () => {

@@ -47,7 +47,7 @@ const LinkLoanAccount = props => {
     };
 
     const { error, status } = await sendData(
-      'https://palasio-bank.herokuapp.com/service/loan',
+      process.env.REACT_APP_BACKEND_URL + '/service/loan',
       newLoanDetails
     );
 
